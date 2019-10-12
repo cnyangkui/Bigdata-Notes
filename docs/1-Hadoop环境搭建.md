@@ -1,31 +1,33 @@
 # 大数据之 Hadoop 环境搭建
 
 1. [文档说明](#文档说明)
-1. [VmWare与Linux版本](#VmWare与Linux版本)
-    * [VmWare版本](#VmWare版本)
-    * [Linux版本](#Linux版本)
-1. [使用VmWare来安装Linux](#使用VmWare来安装Linux)
-1. [Hadoop环境搭建](#Linux服务器环境准备)
-    * [配置网络](#配置网络)
-    * [Xshell连接配置](#Xshell连接配置)
+1. [VmWare 与 Linux 版本](#VmWare与Linux版本)
+  	* [VmWare 版本](#VmWare版本)
+  	* [Linux 版本](#Linux版本)
+1. [使用 VmWare 来安装 Linux](#使用VmWare来安装Linux)
+1. [Hadoop 环境搭建](#Linux服务器环境准备)
+	* [配置网络](#配置网络)
+    * [Xshell 连接配置](#Xshell连接配置)
     * [关闭防火墙](#关闭防火墙)
-    * [关闭selinux](#关闭selinux)
+    * [关闭 selinux](#关闭selinux)
     * [更改主机名](#更改主机名)
     * [建立映射节点](#建立映射节点)
     * [同步时间](#同步时间)
     * [添加普通用户并授权](#添加普通用户并授权)
-    * [上传并解压Hadoop,JDK安装文件](#上传并解压Hadoop,JDK安装文件)
-    * [配置JDK和Hadoop环境变量](#配置JDK和Hadoop环境变量)
-    * [配置hadoop-env.sh](#配置hadoop-env.sh)
-    * [配置core-site.xml](#配置core-site.xml)
-    * [配置hdfs-site.xml](#配置hdfs-site.xml)
-    * [配置mapred-site.xml](#配置mapred-site.xml)
-    * [配置yarn-site.xml](#配置yarn-site.xml)
-    * [编辑slaves](#编辑slaves)
+    * [上传并解压 Hadoop 和 JDK 安装文件](#上传并解压Hadoop和JDK安装文件)
+    * [配置 JDK 和 Hadoop 环境变量](#配置JDK和Hadoop环境变量)
+    * [配置 hadoop-env.sh](#配置hadoop-env)
+    * [配置 core-site.xml](#配置core-site)
+    * [配置 hdfs-site.xml](#配置hdfs-site)
+    * [配置 mapred-site.xml](#配置mapred-site)
+    * [配置 yarn-site.xml](#配置yarn-site)
+    * [编辑 slaves](#编辑slaves)
     * [克隆](#克隆)
-    * [hadoop用户免密码登录](#hadoop用户免密码登录)
-    * [格式化hadoop并启动集群](#格式化hadoop并启动集群)
-    * [验证Hadoop集群是否启动成功](#验证Hadoop集群是否启动成功)
+    * [Hadoop 用户免密码登录](#Hadoop用户免密码登录)
+    * [格式化 Hadoop 并启动集群](#格式化Hadoop并启动集群)
+		* [验证 Hadoop 集群是否启动成功](#验证Hadoop集群是否启动成功)
+		* [遇到权限不够](#遇到权限不够)
+
 
 ## 文档说明
 
@@ -60,8 +62,8 @@ Linux 使用 CentOS 7.6 64位版本。
 ```shell
 vi /etc/sysconfig/network-scripts/ifcfg-ens33 
 
-BOOTPROTO=static #修改
-ONBOOT=yes #修改
+BOOTPROTO=static # 修改
+ONBOOT=yes # 修改
 IPADDR=192.168.52.100
 NETMASK=255.255.255.0
 GATEWAY=192.168.52.2
@@ -71,11 +73,11 @@ DNS1=8.8.8.8
 
 #### 编辑VMware虚拟网络配饰器
 
-![vmware网络配饰器1](images/vmware网络配饰器1.png)
+![vmware网络配饰器1](images/1-Hadoop环境搭建/vmware网络配饰器1.png)
 
-![TIM截图20190927211629](images/vmware网络配饰器2.png)
+![TIM截图20190927211629](images/1-Hadoop环境搭建/vmware网络配饰器2.png)
 
-![vmware网络配饰器3](images/vmware网络配饰器3.png)
+![vmware网络配饰器3](images/1-Hadoop环境搭建/vmware网络配饰器3.png)
 
 ## Xshell连接配置
 
@@ -87,7 +89,7 @@ DNS1=8.8.8.8
 
 解决办法：隧道->“转发x11连接到”取消勾选
 
-![xshell隧道配置](images/xshell隧道配置.png)
+![xshell隧道配置](images/1-Hadoop环境搭建/xshell隧道配置.png)
 
 * **xshell卡在下面提示中时间过长**
 
@@ -97,8 +99,8 @@ DNS1=8.8.8.8
 
 ```shell
 vi /etc/ssh/sshd_config 
-// 找到 #UseDns yes 把yes改为 no
-service sshd restart #刷新ssh配置
+# 找到 #UseDns yes，把yes改为no
+service sshd restart # 刷新ssh配置
 ```
 
 ### 关闭防火墙
@@ -106,10 +108,10 @@ service sshd restart #刷新ssh配置
 在 root 用户下执行以下命令关闭防火墙
 
 ```shell
-systemctl stop firewalld #关闭防火墙
-systemctl disable firewalld #防火墙不在启动
-systemctl status firewalld #查看防火墙状态
-// 显示下列信息即为关闭
+systemctl stop firewalld # 关闭防火墙
+systemctl disable firewalld # 防火墙不在启动
+systemctl status firewalld # 查看防火墙状态
+# 显示下列信息即为关闭
 ● firewalld.service - firewalld - dynamic firewall daemon
    Loaded: loaded (/usr/lib/systemd/system/firewalld.service; disabled; vendor preset: enabled)
    Active: inactive (dead)
@@ -121,8 +123,8 @@ systemctl status firewalld #查看防火墙状态
 在 root 用户下执行以下命令关闭 selinux
 
 ```shell
-yum install -y vim #安装vim
-vim /etc/selinux/config #进入selinux设置文件
+yum install -y vim # 安装vim
+vim /etc/selinux/config # 进入selinux设置文件
 
 SELINUX=disabled
 ```
@@ -169,33 +171,34 @@ crontab -e
 三台 Linux 服务器统一添加普通用户 hadoop，并给以 sudo 权限。
 
 ```shell
-useradd hadoop #添加hadoop用户
-passwd hadoop #给hadoop用户添加密码
+useradd hadoop # 添加hadoop用户
+passwd hadoop # 给hadoop用户添加密码
 ```
 
 给 hadoop 用户添加所有权限
 
 ```shell
-visudo #进入用户权限配置文件
-## Allow root to run any commands anywhere
+visudo # 进入用户权限配置文件
+# Allow root to run any commands anywhere
 root    ALL=(ALL)       ALL
 hadoop  ALL=(ALL)       ALL
 ```
 
-### 上传并解压Hadoop,JDK安装文件
+### 上传并解压Hadoop和JDK安装文件
 
 三台机器定义统一的软件压缩包存放目录，以及解压后的安装目录。
 
 * Hadoop版本：hadoop-2.6.0-cdh5.14.2_after_compile.tar.gz
 * JDK版本：jdk-8u141-linux-x64.tar.gz
 
+在 root 用户下执行以下命令
 ```shell
 cd /	# 先进入根目录
 mkdir -p /bigdata/soft     # 软件压缩包存放目录
 mkdir -p /bigdata/install  # 软件解压后存放目录
-chown -R hadoop:hadoop /bigdata    # root用户将文件夹权限更改为hadoop用户
+chown -R hadoop:hadoop /bigdata    # 在root用户下将文件夹权限更改为hadoop用户
 
-#将jdk8-linux压缩包，zookeeper压缩包，hadoop压缩包，通过lrzsz传送到/bigdata/soft/目录
+#将jdk8-linux压缩包，hadoop压缩包，通过lrzsz传送到/bigdata/soft/目录
 yum install lrzsz #安装
 rz #上传文件
 
@@ -209,31 +212,32 @@ tar -zxvf hadoop-2.6.0-cdh5.14.2_after_compile.tar.gz  -C /bigdata/install/
 ### 配置JDK和Hadoop环境变量
 
 ```shell
-rpm -e --nodeps #删除原生jdk
+rpm -e --nodeps # 删除原生jdk
 vim /etc/profile # 配置全局全局环境变量,下拉到文件最下方
 export JAVA_HOME=/bigdata/install/jdk1.8.0_141  #添加
-export HADOOP_HOME=/bigdata/install/hadoop-2.6.0-cdh5.14.2 #添加
-export PATH=$PATH:$HOME/bin:$JAVA_HOME/bin:$HADOOP_HOME/bin:$HADOOP_HOME/sbin #添加
+export HADOOP_HOME=/bigdata/install/hadoop-2.6.0-cdh5.14.2 # 添加
+export PATH=$PATH:$HOME/bin:$JAVA_HOME/bin:$HADOOP_HOME/bin:$HADOOP_HOME/sbin # 添加
 
 source /etc/profile # 环境变量立即生效
-java -version #验证java
-hadoop version #验证hadoop
+java -version # 验证java
+hadoop version # 验证hadoop
 ```
 
-### 配置hadoop-env.sh
+### 配置hadoop-env
 
+在 hadoop 用户下打开配置文件 hadoop-env.sh
 ```shell
 su - hadoop
 cd /bigdata/install/hadoop-2.6.0-cdh5.14.2/etc/hadoop
 vim hadoop-env.sh 
-export JAVA_HOME=/bigdata/install/jdk1.8.0_141 #修改为此变量
+export JAVA_HOME=/bigdata/install/jdk1.8.0_141 # 修改为此变量
 
-chown -R hadoop:hadoop /bigdata #如果没有权限则在root用户下执行此命令赋权
+chown -R hadoop:hadoop /bigdata # 如果没有权限则在root用户下执行此命令赋权
 ```
 
-### 配置core-site.xml
+### 配置core-site
 
-在hadoop用户下打开配置文件
+在 hadoop 用户下打开配置文件 core-site.xml
 ```shell
 vim /bigdata/install/hadoop-2.6.0-cdh5.14.2/etc/hadoop/core-site.xml
 ```
@@ -271,8 +275,8 @@ vim /bigdata/install/hadoop-2.6.0-cdh5.14.2/etc/hadoop/core-site.xml
 </configuration>
 ```
 
-### 配置hdfs-site.xml
-在hadoop用户下打开配置文件
+### 配置hdfs-site
+在 hadoop 用户下打开配置文件 hdfs-site.xml
 ```shell
 vim /bigdata/install/hadoop-2.6.0-cdh5.14.2/etc/hadoop/hdfs-site.xml
 ```
@@ -334,15 +338,16 @@ vim /bigdata/install/hadoop-2.6.0-cdh5.14.2/etc/hadoop/hdfs-site.xml
 </configuration>
 ```
 
-### 配置mapred-site.xml
+### 配置mapred-site
 
 ```shell
-# 在hadoop用户下操作,进入指定文件夹：
+# 在hadoop用户下操作，进入指定文件夹：
 cd /bigdata/install/hadoop-2.6.0-cdh5.14.2/etc/hadoop/
 
 # 由于原来没有mapred-site.xml配置文件，需要根据模板复制一份：
 cp  mapred-site.xml.template mapred-site.xml
 
+# 打开配置文件mapred-site.xml
 vim /bigdata/install/hadoop-2.6.0-cdh5.14.2/etc/hadoop/mapred-site.xml
 ```
 复制以下内容到配置文件中
@@ -368,8 +373,9 @@ vim /bigdata/install/hadoop-2.6.0-cdh5.14.2/etc/hadoop/mapred-site.xml
 </configuration>
 ```
 
-### 配置yarn-site.xml
-在hadoop用户下打开配置文件
+### 配置yarn-site
+
+在hadoop用户下打开配置文件 yarn-site.xml
 ```shell
 vim /bigdata/install/hadoop-2.6.0-cdh5.14.2/etc/hadoop/yarn-site.xml
 ```
@@ -394,28 +400,28 @@ vim /bigdata/install/hadoop-2.6.0-cdh5.14.2/etc/hadoop/yarn-site.xml
 	</property>
 	<!--多长时间聚合删除一次日志 此处-->
 	<property>
-        <name>yarn.log-aggregation.retain-seconds</name>
-        <value>2592000</value><!--30 day-->
+		<name>yarn.log-aggregation.retain-seconds</name>
+		<value>2592000</value><!--30 day-->
 	</property>
 	<!--时间在几秒钟内保留用户日志。只适用于如果日志聚合是禁用的-->
 	<property>
-        <name>yarn.nodemanager.log.retain-seconds</name>
-        <value>604800</value><!--7 day-->
+		<name>yarn.nodemanager.log.retain-seconds</name>
+		<value>604800</value><!--7 day-->
 	</property>
 	<!--指定文件压缩类型用于压缩汇总日志-->
 	<property>
-        <name>yarn.nodemanager.log-aggregation.compression-type</name>
-        <value>gz</value>
+			<name>yarn.nodemanager.log-aggregation.compression-type</name>
+			<value>gz</value>
 	</property>
 	<!-- nodemanager本地文件存储目录-->
 	<property>
-        <name>yarn.nodemanager.local-dirs</name>
-        <value>/bigdata/install/hadoop-2.6.0-cdh5.14.2/hadoopDatas/yarn/local</value>
+			<name>yarn.nodemanager.local-dirs</name>
+			<value>/bigdata/install/hadoop-2.6.0-cdh5.14.2/hadoopDatas/yarn/local</value>
 	</property>
 	<!-- resourceManager  保存最大的任务完成个数 -->
 	<property>
-        <name>yarn.resourcemanager.max-completed-applications</name>
-        <value>1000</value>
+			<name>yarn.resourcemanager.max-completed-applications</name>
+			<value>1000</value>
 	</property>
 </configuration>
 ```
@@ -425,18 +431,18 @@ vim /bigdata/install/hadoop-2.6.0-cdh5.14.2/etc/hadoop/yarn-site.xml
 此文件用于配置集群有多少个数据节点,我们把node2，node3作为数据节点,node1作为集群管理节点
 
 ```shell
-#在hadoop用户下操作
+# 在hadoop用户下操作
 vim /bigdata/install/hadoop-2.6.0-cdh5.14.2/etc/hadoop/slaves
 
-node01 #添加
-node02 #添加
-node03 #添加
+node01 # 添加
+node02 # 添加
+node03 # 添加
 ```
 
 ### 创建文件存放目录
 
 ```shell
-#在hadoop用户下操作
+# 在hadoop用户下操作
 mkdir -p /bigdata/install/hadoop-2.6.0-cdh5.14.2/hadoopDatas/tempDatas
 mkdir -p /bigdata/install/hadoop-2.6.0-cdh5.14.2/hadoopDatas/namenodeDatas
 mkdir -p /bigdata/install/hadoop-2.6.0-cdh5.14.2/hadoopDatas/datanodeDatas
@@ -452,7 +458,7 @@ mkdir -p /bigdata/install/hadoop-2.6.0-cdh5.14.2/hadoopDatas/dfs/nn/snn/edits
 * 第二台机器主机名为 node2，IP 地址为 192.168.52.110
 * 第三台机器主机名为 node3，IP 地址为 192.168.52.120
 
-### hadoop用户免密码登录
+### Hadoop用户免密码登录
 
 三台机器在hadoop用户下执行以下命令生成公钥与私钥比
 
@@ -466,24 +472,24 @@ scp authorized_keys node02:$PWD
 scp authorized_keys node03:$PWD
 
 在node01上执行以下命令，测试是否能够免密登录
-ssh node01 #免密登录node02
-logout #退出登录
-ssh node02 #免密登录node03
-logout #退出登录
+ssh node01 # 免密登录node02
+logout # 退出登录
+ssh node02 # 免密登录node03
+logout # 退出登录
 ```
-### 格式化hadoop并启动集群
+### 格式化Hadoop并启动集群
 
-**注意：下面的命令只能在node01节点执行，并且执行用户为hadoop ！！！！**
+**注意：下面的命令只能在node01节点执行，并且执行用户为 hadoop ！！！**
 
 ```shell
-hdfs namenode -format #格式化
-#查看日志 无 ERROR 日志消息，即成功
+hdfs namenode -format # 格式化
+# 查看日志 无 ERROR 日志消息，即成功
 
-cd ~ #回到用户目录
+cd ~ # 回到用户目录
 
-start-all.sh #启动集群
+start-all.sh # 启动集群
 
-jps #查看当前进程
+jps # 查看当前进程
 # 输出消息如下：
 2673 Jps
 1972 DataNode
@@ -505,31 +511,30 @@ jps #查看当前进程
 # 命令在node01中执行
 cd /
 hdfs dfs -ls /
-hdfs dfs -mkdir /test #创建测试文件夹
+hdfs dfs -mkdir /test # 创建测试文件夹
 ```
 
 下图显示测试文件夹：
 
-![验证hadoop创建文件夹](images/验证hadoop创建文件夹.png)
+![验证hadoop创建文件夹](images/1-Hadoop环境搭建/验证hadoop创建文件夹.png)
 
 ```shell
-#hadoop用户下
+# hadoop用户下
 cd ~
 vim a.txt
-#输入内容：
+# 输入内容：
 a b c d e 
 
-hdfs dfs -put a.txt /test #将文件上传到hadoop目录中
+hdfs dfs -put a.txt /test # 将文件上传到hadoop目录中
 
-#用hadoop工具，进行词频统计，输出目录到/test/output（等待）：
+# 用hadoop工具，进行词频统计，输出目录到/test/output（等待）：
 hadoop jar /kkb/install/hadoop-2.6.0-cdh5.14.2/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.6.0-cdh5.14.2.jar wordcount /test/a.txt /test/output 
-#查看统计结果：
+# 查看统计结果：
 hdfs dfs -text /test/output/part-r-00000
 ```
+恭喜，Hadoop 环境搭建成功了！！！
 
-## 其他
-
-#### 遇到权限不够
+### 遇到权限不够
 
 ```shell
 # 在root用户下
