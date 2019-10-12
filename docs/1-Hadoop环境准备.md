@@ -1,30 +1,49 @@
 # 大数据之 Hadoop 环境准备
 
-## 一、文档说明
+1. [文档说明](#文档说明)
+1. [VmWare与Linux版本](#VmWare与Linux版本)
+    * [VmWare版本](#VmWare版本)
+    * [Linux版本](#Linux版本)
+1. [使用VmWare来安装Linux](#使用VmWare来安装Linux)
+1. [Linux服务器环境准备](#Linux服务器环境准备)
+    * [配置网络](#配置网络)
+    * [Xshell连接配置](#Xshell连接配置)
+    * [关闭防火墙](#关闭防火墙)
+    * [关闭selinux](#关闭selinux)
+    * [更改主机名](#更改主机名)
+    * [建立映射节点](#建立映射节点)
+    * [添加普通用户并授权](#添加普通用户并授权)
+    * [上传并解压Hadoop、JDK安装文件](#上传并解压Hadoop、JDK安装文件)
+
+## 文档说明
 
 我们在虚拟机上运行 Linux 操作系统，来构建大数据学习的基本软件环境。本文档会说明我们使用的虚拟机和操作系统版本，以及大数据环境搭建的前置准备。
 
-## 二、VmWare 与 Linux 版本
+## VmWare与Linux版本
 
-### VmWare 版本：
+### VmWare版本
 
 VmWare Workstation Pro，版本不做要求，使用 VmWare 10 版本以上即可，关于 VmWare 的安装，直接使用安装包一直下一步安装即可。
 
-### Linux 版本
+### Linux版本
 
 Linux 使用 CentOS 7.6 64位版本。
 
-## 三、使用 VmWare 来安装 CentOS
+## 使用VmWare来安装Linux
 
 略。
 
-## 四、Linux 服务器环境准备
+## Linux服务器环境准备
 
-我们使用三台 Linux 服务器，来做统一的环境准备.
+我们使用三台 Linux 服务器，来做统一的环境准备：
+
+* 第一台机器主机名为 node1，IP 地址为 192.168.52.100
+* 第二台机器主机名为 node2，IP 地址为 192.168.52.110
+* 第三台机器主机名为 node3，IP 地址为 192.168.52.120
 
 ### 配置网络
 
-三台机器修改 IP 地址：
+修改 IP 地址，第一台机器 IP 地址为 192.168.52.100
 
 ```shell
 vi /etc/sysconfig/network-scripts/ifcfg-ens33 
@@ -38,14 +57,6 @@ DNS1=8.8.8.8
 ```
 使用 `service network restart `命令，重启网络服务。
 
-准备三台 Linux 机器，IP 地址分别设置为：
-
-第一台机器IP地址：192.168.52.100
-
-第二台机器IP地址：192.168.52.110
-
-第三台机器IP地址：192.168.52.120
-
 #### 编辑VMware虚拟网络配饰器
 
 ![vmware网络配饰器1](images/vmware网络配饰器1.png)
@@ -54,9 +65,33 @@ DNS1=8.8.8.8
 
 ![vmware网络配饰器3](images/vmware网络配饰器3.png)
 
+## Xshell连接配置
+
+ xshell可能遇到的问题：
+
+* **警告**：
+
+> Warring The remote SSH server rejected X11 forwarding request
+
+解决办法：隧道->“转发x11连接到”取消勾选
+
+![xshell隧道配置](images/xshell隧道配置.png)
+
+* **xshell卡在下面提示中时间过长**
+
+> To escape to local shell, press 'Ctrl+Alt+]'.
+
+解决办法：
+
+```shell
+vi /etc/ssh/sshd_config 
+// 找到 #UseDns yes 把yes改为 no
+service sshd restart #刷新ssh配置
+```
+
 ### 关闭防火墙
 
-三台机器在root用户下执行以下命令关闭防火墙
+在 root 用户下执行以下命令关闭防火墙
 
 ```shell
 systemctl stop firewalld #关闭防火墙
@@ -69,11 +104,9 @@ systemctl status firewalld #查看防火墙状态
      Docs: man:firewalld(1)
 ```
 
-### 关闭 selinux
+### 关闭selinux
 
-三台机器在 root用户下执行以下命令关闭 selinux
-
-三台机器执行以下命令，关闭 selinux
+在 root 用户下执行以下命令关闭 selinux
 
 ```shell
 yum install -y vim #安装vim
@@ -82,19 +115,7 @@ vim /etc/selinux/config #进入selinux设置文件
 SELINUX=disabled
 ```
 
-
-
 ### 更改主机名
-
-三台机器分别更改主机名：
-
-第一台主机名更改为：node01
-
-第二台主机名更改为：node02
-
-第三台主机名更改为：node03
-
-
 
 第一台机器执行以下命令修改主机名
 
@@ -109,25 +130,9 @@ node01
 hostnamectl set-hostname node01
 ```
 
-第二台机器执行以下命令修改主机名
+### 建立映射节点
 
-```shell
-vim /etc/hostname
-node02
-```
-
-第三台机器执行以下命令修改主机名
-
-```shell
-vim /etc/hostname
-node03
-```
-
-
-
-### 三台机器更改主机名与 IP 地址映射
-
-三台机器执行以下命令更改主机名与 IP 地址映射关系
+执行以下命令更改主机名与 IP 地址映射关系
 
 ```shell
 vim /etc/hosts
@@ -136,6 +141,13 @@ vim /etc/hosts
 192.168.52.110  node02
 192.168.52.120  node03
 ```
+
+### 克隆另外两台机器
+
+使用虚拟机的克隆功能，克隆出与第一台机器 node1 完成相同另外两台机器 node2 和 node3，再配置 node2 和 node3 的网络，更改它们的主机名。参考上述<a>配置网络</a>和<a>更改主机名</a>两个步骤。
+
+* 第二台机器主机名为 node2，IP 地址为 192.168.52.110
+* 第三台机器主机名为 node3，IP 地址为 192.168.52.120
 
 ### 三台机器同步时间
 
@@ -147,36 +159,41 @@ crontab -e
 */1 * * * * /usr/sbin/ntpdate time1.aliyun.com
 ```
 
-### 三台机器添加普通用户
+### 添加普通用户并授权
 
-三台linux服务器统一添加普通用户hadoop，并给以sudo权限，用于以后所有的大数据软件的安装
+三台 Linux 服务器统一添加普通用户 hadoop，并给以 sudo 权限。
 
-并统一设置普通用户的密码为  123456
-
-```
- useradd hadoop
- passwd hadoop
+```shell
+useradd hadoop #添加hadoop用户
+passwd hadoop #给hadoop用户添加密码
 ```
 
-三台机器为普通用户添加sudo权限
+给 hadoop 用户添加所有权限
 
-```
-visudo
-
+```shell
+visudo #进入用户权限配置文件
+## Allow root to run any commands anywhere
+root    ALL=(ALL)       ALL
 hadoop  ALL=(ALL)       ALL
 ```
 
-### 三台定义统一目录
+### 上传并解压Hadoop、JDK安装文件
 
-定义三台linux服务器软件压缩包存放目录，以及解压后安装目录，三台机器执行以下命令，创建两个文件夹，一个用于存放软件压缩包目录，一个用于存放解压后目录
+三台机器定义统一的软件压缩包存放目录，以及解压后的安装目录。
 
-```java
- mkdir -p /kkb/soft     # 软件压缩包存放目录
- mkdir -p /kkb/install  # 软件解压后存放目录
- chown -R hadoop:hadoop /kkb    # 将文件夹权限更改为hadoop用户
+```shell
+cd /	# 先进入根目录
+mkdir -p /bigdata/soft     # 软件压缩包存放目录
+mkdir -p /bigdata/install  # 软件解压后存放目录
+chown -R hadoop:hadoop /kkb    # root用户将文件夹权限更改为hadoop用户
+
+#将jdk8-linux压缩包，zookeeper压缩包，hadoop压缩包，通过xftp传送到/bigdata/soft/目录
+cd /kkb/soft
+# 解压jdk到/kkb/install文件夹
+tar -zxvf jdk-8u141-linux-x64.tar.gz  -C /bigdata/install/ 
+# 解压hadoop到/kkb/install文件夹
+tar -zxvf hadoop-2.6.0-cdh5.14.2_after_compile.tar.gz  -C /bigdata/install/ 
 ```
-
-
 
 ### 三台机器安装jdk
 
