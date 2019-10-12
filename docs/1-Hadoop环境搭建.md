@@ -464,14 +464,16 @@ mkdir -p /bigdata/install/hadoop-2.6.0-cdh5.14.2/hadoopDatas/dfs/nn/snn/edits
 
 ```shell
 ssh-keygen -t rsa 
-三台机器在hadoop用户下，执行以下命令将公钥拷贝到node01服务器上面去
+
+# 三台机器在hadoop用户下，执行以下命令将公钥拷贝到node01服务器上面去
 ssh-copy-id  node01
-node01在hadoop用户下，执行以下命令，将authorized_keys拷贝到node02与node03服务器
+
+# node01在hadoop用户下，执行以下命令，将authorized_keys拷贝到node02与node03服务器
 cd /home/hadoop/.ssh/
 scp authorized_keys node02:$PWD
 scp authorized_keys node03:$PWD
 
-在node01上执行以下命令，测试是否能够免密登录
+# 在node01上执行以下命令，测试是否能够免密登录
 ssh node01 # 免密登录node02
 logout # 退出登录
 ssh node02 # 免密登录node03
@@ -503,10 +505,11 @@ jps # 查看当前进程
 
 在浏览器地址栏输入：http://192.168.52.100:50070
 
-如果hadoop集群启动成功，那么你会看到：
+如果 hadoop 集群启动成功，那么你会看到：
 
 ![hadoop网页](images/1-Hadoop环境搭建/hadoop网页.png)
 
+接下来通过执行 wordcount 进行验证
 ```shell
 # 命令在node01中执行
 cd /
@@ -519,7 +522,7 @@ hdfs dfs -mkdir /test # 创建测试文件夹
 ![验证hadoop创建文件夹](images/1-Hadoop环境搭建/验证hadoop创建文件夹.png)
 
 ```shell
-# hadoop用户下
+# 在hadoop用户下
 cd ~
 vim a.txt
 # 输入内容：
@@ -529,10 +532,11 @@ hdfs dfs -put a.txt /test # 将文件上传到hadoop目录中
 
 # 用hadoop工具，进行词频统计，输出目录到/test/output（等待）：
 hadoop jar /kkb/install/hadoop-2.6.0-cdh5.14.2/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.6.0-cdh5.14.2.jar wordcount /test/a.txt /test/output 
+
 # 查看统计结果：
 hdfs dfs -text /test/output/part-r-00000
 ```
-<font color=red>**恭喜，Hadoop 环境搭建成功了！！！**</font>
+**恭喜，Hadoop 环境搭建成功了！！！**
 
 ### 遇到权限不够
 
