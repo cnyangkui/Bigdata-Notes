@@ -2,31 +2,32 @@
 
 1. [文档说明](#文档说明)
 1. [VmWare 与 Linux 版本](#VmWare与Linux版本)
-  	* [VmWare 版本](#VmWare版本)
-  	* [Linux 版本](#Linux版本)
+	* [VmWare 版本](#VmWare版本)
+	* [Linux 版本](#Linux版本)
 1. [使用 VmWare 来安装 Linux](#使用VmWare来安装Linux)
-1. [Hadoop 环境搭建](#Linux服务器环境准备)
+1. [Hadoop 环境搭建](#Hadoop环境搭建)
 	* [配置网络](#配置网络)
-    * [Xshell 连接配置](#Xshell连接配置)
-    * [关闭防火墙](#关闭防火墙)
-    * [关闭 selinux](#关闭selinux)
-    * [更改主机名](#更改主机名)
-    * [建立映射节点](#建立映射节点)
-    * [同步时间](#同步时间)
-    * [添加普通用户并授权](#添加普通用户并授权)
-    * [上传并解压 Hadoop 和 JDK 安装文件](#上传并解压Hadoop和JDK安装文件)
-    * [配置 JDK 和 Hadoop 环境变量](#配置JDK和Hadoop环境变量)
-    * [配置 hadoop-env.sh](#配置hadoop-env)
-    * [配置 core-site.xml](#配置core-site)
-    * [配置 hdfs-site.xml](#配置hdfs-site)
-    * [配置 mapred-site.xml](#配置mapred-site)
-    * [配置 yarn-site.xml](#配置yarn-site)
-    * [编辑 slaves](#编辑slaves)
-    * [克隆](#克隆)
-    * [Hadoop 用户免密码登录](#Hadoop用户免密码登录)
-    * [格式化 Hadoop 并启动集群](#格式化Hadoop并启动集群)
-		* [验证 Hadoop 集群是否启动成功](#验证Hadoop集群是否启动成功)
-		* [遇到权限不够](#遇到权限不够)
+	* [Xshell 连接配置](#Xshell连接配置)
+	* [关闭防火墙](#关闭防火墙)
+	* [关闭 selinux](#关闭selinux)
+	* [更改主机名](#更改主机名)
+	* [建立映射节点](#建立映射节点)
+	* [同步时间](#同步时间)
+	* [添加普通用户并授权](#添加普通用户并授权)
+	* [上传并解压 Hadoop 和 JDK 安装文件](#上传并解压Hadoop和JDK安装文件)
+	* [配置 JDK 和 Hadoop 环境变量](#配置JDK和Hadoop环境变量)
+	* [配置 hadoop-env.sh](#配置hadoop-env)
+	* [配置 core-site.xml](#配置core-site)
+	* [配置 hdfs-site.xml](#配置hdfs-site)
+	* [配置 mapred-site.xml](#配置mapred-site)
+	* [配置 yarn-site.xml](#配置yarn-site)
+	* [编辑 slaves](#编辑slaves)
+	* [创建Hadoop数据存放目录](#创建Hadoop数据存放目录)
+	* [克隆](#克隆)
+	* [Hadoop 用户免密码登录](#Hadoop用户免密码登录)
+	* [格式化 Hadoop 并启动集群](#格式化Hadoop并启动集群)
+	* [验证 Hadoop 集群是否启动成功](#验证Hadoop集群是否启动成功)
+	* [遇到权限不够](#遇到权限不够)
 
 
 ## 文档说明
@@ -439,10 +440,9 @@ node02 # 添加
 node03 # 添加
 ```
 
-### 创建文件存放目录
-
+### 创建Hadoop数据存放目录
+在 hadoop 用户下执行以下命令
 ```shell
-# 在hadoop用户下操作
 mkdir -p /bigdata/install/hadoop-2.6.0-cdh5.14.2/hadoopDatas/tempDatas
 mkdir -p /bigdata/install/hadoop-2.6.0-cdh5.14.2/hadoopDatas/namenodeDatas
 mkdir -p /bigdata/install/hadoop-2.6.0-cdh5.14.2/hadoopDatas/datanodeDatas
@@ -505,7 +505,7 @@ jps # 查看当前进程
 
 如果hadoop集群启动成功，那么你会看到：
 
-![hadoop网页](images/hadoop网页.png)
+![hadoop网页](images/1-Hadoop环境搭建/hadoop网页.png)
 
 ```shell
 # 命令在node01中执行
@@ -532,15 +532,15 @@ hadoop jar /kkb/install/hadoop-2.6.0-cdh5.14.2/share/hadoop/mapreduce/hadoop-map
 # 查看统计结果：
 hdfs dfs -text /test/output/part-r-00000
 ```
-恭喜，Hadoop 环境搭建成功了！！！
+<font color=red>**恭喜，Hadoop 环境搭建成功了！！！**</font>
 
 ### 遇到权限不够
 
 ```shell
 # 在root用户下
 # 修改目录所属用户和组为hadoop:hadoop
-chown -R hadoop:hadoop /kkb
+chown -R hadoop:hadoop /bigdata
 
 # 修改目录所属用户和组的权限值为755
-chmod -R 755  /kkb 
+chmod -R 755  /bigdata 
 ```
