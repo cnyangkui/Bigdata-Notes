@@ -531,7 +531,7 @@ a b c d e
 hdfs dfs -put a.txt /test # 将文件上传到hadoop目录中
 
 # 用hadoop工具，进行词频统计，输出目录到/test/output（等待）：
-hadoop jar /kkb/install/hadoop-2.6.0-cdh5.14.2/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.6.0-cdh5.14.2.jar wordcount /test/a.txt /test/output 
+hadoop jar /bigdata/install/hadoop-2.6.0-cdh5.14.2/share/hadoop/mapreduce/hadoop-mapreduce-examples-2.6.0-cdh5.14.2.jar wordcount /test/a.txt /test/output 
 
 # 查看统计结果：
 hdfs dfs -text /test/output/part-r-00000
